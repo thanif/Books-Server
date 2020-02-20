@@ -598,4 +598,7 @@ Deployed project is here. https://first-books-example.herokuapp.com/
 
 
 # Reference
+
+https://tecadmin.net/install-postgresql-server-on-ubuntu/
+
 https://medium.com/@dushan14/create-a-web-application-with-python-flask-postgresql-and-deploy-on-heroku-243d548335cc
