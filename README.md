@@ -33,6 +33,7 @@ su - your_username
 createdb my_db // repalce my_db with the username
 
 After that connect to the PostgreSQL server. You will be logged in and get database prompt. To list all available databases use these commands.
+
 psql
 
 talha=> \list
@@ -88,20 +89,28 @@ from flask import Flask, request
 app = Flask(__name__)
 
 @app.route("/")
+
 def hello():
+
     return "Hello World!"
 
 @app.route("/name/<name>")
+
 def get_book_name(name):
+
     return "name : {}".format(name)
 
 @app.route("/details")
+
 def get_book_details():
+    
     author=request.args.get('author')
+    
     published=request.args.get('published')
     return "Author : {}, Published: {}".format(author,published)
 
 if __name__ == '__main__':
+    
     app.run()
 
 To execute above code run
@@ -133,6 +142,7 @@ import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
+    
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
@@ -141,20 +151,24 @@ class Config(object):
 
 
 class ProductionConfig(Config):
+    
     DEBUG = False
 
 
 class StagingConfig(Config):
+    
     DEVELOPMENT = True
     DEBUG = True
 
 
 class DevelopmentConfig(Config):
+    
     DEVELOPMENT = True
     DEBUG = True
 
 
 class TestingConfig(Config):
+    
     TESTING = True
 
 According to created configurations set “APP_SETTINGS” environment variable by running this in the terminal
@@ -168,7 +182,9 @@ export DATABASE_URL="postgresql://localhost/books_store"
 
 It should be returned when you execute echo $DATABASE_URL in terminal.
 
-So, now our python application can get database URL for the application from the environment variable which is “DATABASE_URL”
+So, now our python application can get database URL for the application from the environment variable which is 
+
+“DATABASE_URL”
 
 Also put these 2 environment variables into a file called .env
 
@@ -195,15 +211,19 @@ Import os
 app = Flask(__name__)
 
 app.config.from_object(os.environ['APP_SETTINGS'])
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
+
 from models import Book
+
 @app.route("/")
+
 def hello():
+    
     return "Hello World!"
  
-
-
 defined db=SQLAlchemy(app) will be used to handle the database transactions.
 
 Here we had to import Book from models. models.py is described below.
@@ -213,44 +233,61 @@ Create a file named models.py and there we define our tables. Here we define our
 from app import db
 
 class Book(db.Model):
+    
     __tablename__ = 'books'
 
     id = db.Column(db.Integer, primary_key=True)
+    
     name = db.Column(db.String())
+    
     author = db.Column(db.String())
+    
     published = db.Column(db.String())
 
     def __init__(self, name, author, published):
-        self.name = name
-        self.author = author
-        self.published = published
+        
+	self.name = name
+        
+	self.author = author
+        
+	self.published = published
 
     def __repr__(self):
-        return '<id {}>'.format(self.id)
+        
+	return '<id {}>'.format(self.id)
     
     def serialize(self):
-        return {
-            'id': self.id, 
-            'name': self.name,
-            'author': self.author,
-            'published':self.published
+        
+	return {
+            
+	    'id': self.id, 
+            
+	    'name': self.name,
+            
+	    'author': self.author,
+            
+	    'published':self.published
         }
+
 We have defined books table with the columns [id, name, author, published]
 
 another requirement for database migration is manage.py file. Create a file named manage.py
 
 from flask_script import Manager
+
 from flask_migrate import Migrate, MigrateCommand
 
 from app import app, db
 
 migrate = Migrate(app, db)
+
 manager = Manager(app)
 
 manager.add_command('db', MigrateCommand)
 
 
 if __name__ == '__main__':
+    
     manager.run()
 
 In manage.py file we use 2 more packages flask_script, flask_migrate.
@@ -292,30 +329,44 @@ At this moment we have created the required database configurations and database
 import os
 
 from flask import Flask, request, jsonify
+
 from flask_sqlalchemy import SQLAlchemy
  
 app = Flask(__name__)
  
 app.config.from_object(os.environ['APP_SETTINGS'])
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
  
 from models import Book
  
 @app.route("/")
+
 def hello():
+    
     return "Hello World!"
  
 @app.route("/add")
+
 def add_book():
+    
     name=request.args.get('name')
+    
     author=request.args.get('author')
+    
     published=request.args.get('published')
+    
     try:
-        book=Book(
-            name=name,
-            author=author,
-            published=published
+        
+	book=Book(
+            
+	    name=name,
+            
+	    author=author,
+            
+	    published=published
         )
         db.session.add(book)
         db.session.commit()
@@ -324,7 +375,9 @@ def add_book():
 	    return(str(e))
  
 @app.route("/getall")
+
 def get_all():
+    
     try:
         books=Book.query.all()
         return  jsonify([e.serialize() for e in books])
@@ -332,7 +385,9 @@ def get_all():
 	    return(str(e))
  
 @app.route("/get/<id_>")
+
 def get_by_id(id_):
+    
     try:
         book=Book.query.filter_by(id=id_).first()
         return jsonify(book.serialize())
@@ -340,6 +395,7 @@ def get_by_id(id_):
 	    return(str(e))
  
 if __name__ == '__main__':
+    
     app.run()
 
 We have used jsonify for make our response in JSON format. You can see that serialize method we created in Book class in models.py is used here to provide book objects as serialized.
@@ -374,6 +430,7 @@ Let’s create getdata.html with a form and note that the form method is POST.
 I have used Bootstrap to make it a smooth web page.
 
 <!DOCTYPE html>
+
 <html lang="en">
  
 <head>
@@ -444,17 +501,23 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
  
 app.config.from_object(os.environ['APP_SETTINGS'])
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
  
 from models import Book
  
 @app.route("/")
+
 def hello():
+    
     return "Hello World!"
  
 @app.route("/add")
+
 def add_book():
+    
     name=request.args.get('name')
     author=request.args.get('author')
     published=request.args.get('published')
@@ -471,7 +534,9 @@ def add_book():
 	    return(str(e))
  
 @app.route("/getall")
+
 def get_all():
+    
     try:
         books=Book.query.all()
         return  jsonify([e.serialize() for e in books])
@@ -479,7 +544,9 @@ def get_all():
 	    return(str(e))
  
 @app.route("/get/<id_>")
+
 def get_by_id(id_):
+    
     try:
         book=Book.query.filter_by(id=id_).first()
         return jsonify(book.serialize())
@@ -487,7 +554,9 @@ def get_by_id(id_):
 	    return(str(e))
  
 @app.route("/add/form",methods=['GET', 'POST'])
+
 def add_book_form():
+    
     if request.method == 'POST':
         name=request.form.get('name')
         author=request.form.get('author')
@@ -506,6 +575,7 @@ def add_book_form():
     return render_template("getdata.html")
  
 if __name__ == '__main__':
+    
     app.run()
 
 Here we have used render_template method and note that render_template has been imported from flask. http://127.0.0.1:5000/add/form will return this form.
@@ -542,6 +612,7 @@ And create a file named .gitignore in the project root directory.
 __pycache__/
 
 env/
+
 .gitignore
 
 Now add project files to git and commit.
