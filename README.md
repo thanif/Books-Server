@@ -668,7 +668,7 @@ Deployed project is here. https://first-books-example.herokuapp.com/
 
 
 
-# Reference
+# References
 
 https://tecadmin.net/install-postgresql-server-on-ubuntu/
 
